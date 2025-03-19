@@ -44,7 +44,7 @@ st.markdown(
                 Heap Sort Visualizer
             </button>
         </a>
-        <a href="https://graphcoloring.streamlit.app/" target="_blank">
+        <a href="https://benakdeepak-graph-coloring-main-deguzp.streamlit.app/" target="_blank">
             <button class="button">
                 Graph Coloring Visualizer
             </button>
