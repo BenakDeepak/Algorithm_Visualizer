@@ -34,7 +34,7 @@ st.markdown(
     </style>
     
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <a href="https://heap-sort-visualizers.onrender.com" target="_blank">
+        <a href="https://avl-tree.onrender.com" target="_blank">
             <button class="button">
                 AVL Tree Visualizer
             </button>
