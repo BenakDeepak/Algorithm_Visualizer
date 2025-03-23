@@ -34,17 +34,17 @@ st.markdown(
     </style>
     
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <a href="https://avltrees.streamlit.app/" target="_blank">
+        <a href="https://heap-sort-visualizers.onrender.com" target="_blank">
             <button class="button">
                 AVL Tree Visualizer
             </button>
         </a>
-        <a href="https://ada-project-2.onrender.com/" target="_blank">
+        <a href="https://heap-sort-visualizers.onrender.com" target="_blank">
             <button class="button">
                 Heap Sort Visualizer
             </button>
         </a>
-        <a href="https://benakdeepak-graph-coloring-main-deguzp.streamlit.app/" target="_blank">
+        <a href="https://graph-coloring.onrender.com" target="_blank">
             <button class="button">
                 Graph Coloring Visualizer
             </button>
