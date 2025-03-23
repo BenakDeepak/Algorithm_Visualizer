@@ -39,7 +39,7 @@ st.markdown(
                 AVL Tree Visualizer
             </button>
         </a>
-        <a href="https://heap-sort-visualizers.onrender.com" target="_blank">
+        <a href="https://ada-project-2.onrender.com/" target="_blank">
             <button class="button">
                 Heap Sort Visualizer
             </button>
