@@ -32,23 +32,20 @@ st.markdown(
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);  /* Shadow deepens on hover */
         }
     </style>
-    
-    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <a href="https://avl-tree.onrender.com" target="_blank">
-            <button class="button">
-                AVL Tree Visualizer
-            </button>
-        </a>
-        <a href="https://ada-project-2.onrender.com/" target="_blank">
-            <button class="button">
-                Heap Sort Visualizer
-            </button>
-        </a>
-        <a href="https://graph-coloring.onrender.com" target="_blank">
-            <button class="button">
-                Graph Coloring Visualizer
-            </button>
-        </a>
-    </div>
     """, unsafe_allow_html=True
 )
+
+# Create columns for the buttons
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("AVL Tree Visualizer", key="avl"):
+        st.switch_page("pages/1_AVL_Tree.py")
+
+with col2:
+    if st.button("Heap Sort Visualizer", key="heap"):
+        st.switch_page("pages/2_Heap_Sort.py")
+
+with col3:
+    if st.button("Graph Coloring Visualizer", key="graph"):
+        st.switch_page("pages/3_Graph_Coloring.py")
