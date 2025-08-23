@@ -197,6 +197,62 @@
             border-radius: 5px;
             border-left: 4px solid #2196f3;
         }
+        
+        .time-complexity-chart {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .complexity-notes {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .comparison-table {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .comparison-table th, 
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .comparison-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .complexity-notes h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .complexity-notes ul {
+            padding-left: 20px;
+        }
+        
+        .complexity-notes li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -317,6 +373,57 @@
         <a href="/" class="button">Back to Home</a>
     </div>
 
+    <!-- Time Complexity Section -->
+    <div class="visualization-section">
+        <h2>Time Complexity Comparison</h2>
+        <div class="time-complexity-chart">
+            <canvas id="complexityChart"></canvas>
+        </div>
+        <div class="complexity-notes">
+            <h3>Time Complexity Analysis</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(n log n) - When the array is already sorted</li>
+                <li><strong>Average Case:</strong> O(n log n) - For random data</li>
+                <li><strong>Worst Case:</strong> O(n log n) - Maintains consistent performance</li>
+            </ul>
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Best</th>
+                        <th>Average</th>
+                        <th>Worst</th>
+                    </tr>
+                    <tr>
+                        <td>Heap Sort</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                    </tr>
+                    <tr>
+                        <td>Quick Sort</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(n²)</td>
+                    </tr>
+                    <tr>
+                        <td>Merge Sort</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                    </tr>
+                    <tr>
+                        <td>Bubble Sort</td>
+                        <td>O(n)</td>
+                        <td>O(n²)</td>
+                        <td>O(n²)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let currentArray = [];
         let topdownSteps = [];
@@ -535,6 +642,108 @@
 
         // Initialize
         updateArrayDisplay();
+        
+        // Initialize time complexity chart
+        function initComplexityChart() {
+            const ctx = document.getElementById('complexityChart').getContext('2d');
+            const sizes = [10, 50, 100, 200, 500, 1000, 2000];
+            
+            // Theoretical time complexity functions
+            const nLogn = sizes.map(n => n * Math.log2(n) * 0.1); // scaled for better visualization
+            const nSquared = sizes.map(n => n * n * 0.001); // scaled for better visualization
+            const linear = sizes.map(n => n * 2); // scaled for better visualization
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sizes,
+                    datasets: [
+                        {
+                            label: 'Heap Sort (n log n)',
+                            data: nLogn,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Quick Sort (n log n avg, n² worst)',
+                            data: nLogn.map((val, i) => i === nLogn.length - 1 ? sizes[i] * sizes[i] * 0.001 : val * 1.2),
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: 'Bubble Sort (n²)',
+                            data: nSquared,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: 'Linear (n)',
+                            data: linear,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 2,
+                            borderDash: [2, 2],
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Time Complexity Comparison',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Number of Elements (n)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Relative Time'
+                            },
+                            min: 0
+                        }
+                    },
+                    animation: {
+                        duration: 2000
+                    }
+                }
+            });
+        }
+        
+        // Initialize the chart when the page loads
+        document.addEventListener('DOMContentLoaded', initComplexityChart);
     </script>
 </body>
 </html>
