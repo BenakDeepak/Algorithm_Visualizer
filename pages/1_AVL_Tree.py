@@ -112,23 +112,29 @@ def visualize_tree(node, graph=None):
 def sift_up(arr, i, steps, sorted_indices):
     parent = (i - 1) // 2
     while i > 0 and arr[parent] < arr[i]:
-        steps.append((arr.copy(), set(sorted_indices), i, "red"))
+        steps.append((arr.copy(), sorted_indices.copy(), i, "red"))
         arr[i], arr[parent] = arr[parent], arr[i]
         i = parent
         parent = (i - 1) // 2
-    steps.append((arr.copy(), set(sorted_indices), i, "green"))
+    steps.append((arr.copy(), sorted_indices.copy(), i, "green"))
 
 def topDownHeapSort(arr):
     n = len(arr)
     steps = [(arr.copy(), set(), -1, "")]
     sorted_indices = set()
+    
+    # Build heap using top-down approach
     for i in range(n):
         sift_up(arr, i, steps, sorted_indices)
+    
+    # Extract elements from heap
     for i in range(n-1, 0, -1):
         arr[i], arr[0] = arr[0], arr[i]
         sorted_indices.add(i)
-        steps.append((arr.copy(), set(sorted_indices), i, "green"))
-        heapify(arr, i, 0, steps, sorted_indices)
+        steps.append((arr.copy(), sorted_indices.copy(), i, "green"))
+        if i > 1:  # Only heapify if there are elements left to heapify
+            heapify(arr, i, 0, steps, sorted_indices)
+    
     return steps
 
 def sift_down(arr, n, i, steps, sorted_indices):
@@ -140,21 +146,30 @@ def sift_down(arr, n, i, steps, sorted_indices):
     if r < n and arr[r] > arr[largest]:
         largest = r
     if largest != i:
-        steps.append((arr.copy(), set(sorted_indices), i, "red", largest))
+        steps.append((arr.copy(), sorted_indices.copy(), i, "red", largest))
         arr[i], arr[largest] = arr[largest], arr[i]
         sift_down(arr, n, largest, steps, sorted_indices)
+    else:
+        # Add step even when no swap occurs to show the current state
+        steps.append((arr.copy(), sorted_indices.copy(), i, "blue", -1))
 
 def bottomUpHeapSort(arr):
     n = len(arr)
     steps = [(arr.copy(), set(), -1, "", -1)]
     sorted_indices = set()
+    
+    # Build heap using bottom-up approach
     for i in range(n // 2 - 1, -1, -1):
         sift_down(arr, n, i, steps, sorted_indices)
+    
+    # Extract elements from heap
     for i in range(n-1, 0, -1):
         arr[i], arr[0] = arr[0], arr[i]
         sorted_indices.add(i)
-        steps.append((arr.copy(), set(sorted_indices), 0, "green", i))
-        sift_down(arr, i, 0, steps, sorted_indices)
+        steps.append((arr.copy(), sorted_indices.copy(), 0, "green", i))
+        if i > 1:  # Only heapify if there are elements left to heapify
+            sift_down(arr, i, 0, steps, sorted_indices)
+    
     return steps
 
 def heapify(arr, n, i, steps, sorted_indices):
@@ -167,8 +182,65 @@ def heapify(arr, n, i, steps, sorted_indices):
         largest = r
     if largest != i:
         arr[i], arr[largest] = arr[largest], arr[i]
-        steps.append((arr.copy(), set(sorted_indices), i, "red"))
+        steps.append((arr.copy(), sorted_indices.copy(), i, "red"))
         heapify(arr, n, largest, steps, sorted_indices)
+
+def visualize_heap(arr, sorted_indices, current_index, current_color, swap_with=None):
+    dot = Digraph()
+    dot.attr(rankdir='TB')  # Top to bottom layout
+    dot.attr('node', shape='circle', style='filled', fontsize='14', fontweight='bold')
+    dot.attr('edge', color='#34495e', penwidth='3')  # Dark blue edges with thickness
+    
+    n = len(arr)
+    
+    # Add all nodes first
+    for i in range(n):
+        # Determine node color and style
+        if i == current_index:
+            node_color = current_color
+            node_style = 'filled,bold'
+        elif i == swap_with:
+            node_color = current_color
+            node_style = 'filled,bold'
+        elif i in sorted_indices:
+            node_color = "#27ae60"  # Green for sorted
+            node_style = 'filled'
+        else:
+            node_color = "#3498db"  # Blue for unsorted
+            node_style = 'filled'
+        
+        label = str(arr[i])
+        dot.node(str(i), label, 
+                color=node_color, 
+                fillcolor=node_color, 
+                fontcolor='white',
+                style=node_style,
+                width='0.8',
+                height='0.8')
+    
+    # Add all parent-child edges to show the complete heap structure
+    for i in range(n):
+        # Left child: 2*i + 1
+        left_child = 2 * i + 1
+        if left_child < n:
+            dot.edge(str(i), str(left_child))
+        
+        # Right child: 2*i + 2
+        right_child = 2 * i + 2
+        if right_child < n:
+            dot.edge(str(i), str(right_child))
+    
+    return dot
+
+def highlight_array(arr, sorted_indices):
+    """Helper function to create highlighted array display"""
+    highlighted_arr = []
+    for i in range(len(arr)):
+        if i in sorted_indices:
+            highlighted_arr.append(f'<span style="color:green">{arr[i]}</span>')
+        else:
+            highlighted_arr.append(f'<span style="color:black">{arr[i]}</span>')
+    return highlighted_arr
 
 # Graph Coloring functions
 def is_valid_coloring(graph, coloring):
@@ -253,10 +325,61 @@ def heap_sort_api():
     topdown_steps = topDownHeapSort(arr.copy())
     bottomup_steps = bottomUpHeapSort(arr.copy())
     
+    # Generate visualizations for each step
+    topdown_visualizations = []
+    for step in topdown_steps:
+        step_arr, sorted_until, current_index, current_color = step
+        dot = visualize_heap(step_arr, sorted_until, current_index, current_color)
+        svg_content = dot.pipe(format='svg').decode('utf-8')
+        topdown_visualizations.append({
+            'array': step_arr,
+            'sorted_indices': list(sorted_until) if isinstance(sorted_until, set) else sorted_until,
+            'current_index': current_index,
+            'current_color': current_color,
+            'visualization': svg_content
+        })
+    
+    bottomup_visualizations = []
+    for step in bottomup_steps:
+        step_arr, sorted_until, current_index, current_color, swap_with = step
+        dot = visualize_heap(step_arr, sorted_until, current_index, current_color, swap_with)
+        svg_content = dot.pipe(format='svg').decode('utf-8')
+        bottomup_visualizations.append({
+            'array': step_arr,
+            'sorted_indices': list(sorted_until) if isinstance(sorted_until, set) else sorted_until,
+            'current_index': current_index,
+            'current_color': current_color,
+            'swap_with': swap_with,
+            'visualization': svg_content
+        })
+    
     return jsonify({
-        'topdown_steps': topdown_steps,
-        'bottomup_steps': bottomup_steps,
-        'sorted_array': sorted(arr)
+        'topdown_steps': topdown_visualizations,
+        'bottomup_steps': bottomup_visualizations,
+        'sorted_array': sorted(arr),
+        'message': 'Heap sort completed with clear parent-child line visualization!'
+    })
+
+@app.route('/heap_sort/visualize_step', methods=['POST'])
+def visualize_heap_step():
+    """Generate visualization for a specific heap sort step"""
+    data = request.get_json()
+    arr = data.get('array', [])
+    sorted_indices = set(data.get('sorted_indices', []))
+    current_index = data.get('current_index', -1)
+    current_color = data.get('current_color', '')
+    swap_with = data.get('swap_with', None)
+    
+    dot = visualize_heap(arr, sorted_indices, current_index, current_color, swap_with)
+    svg_content = dot.pipe(format='svg').decode('utf-8')
+    
+    return jsonify({
+        'visualization': svg_content,
+        'array': arr,
+        'sorted_indices': list(sorted_indices),
+        'current_index': current_index,
+        'current_color': current_color,
+        'swap_with': swap_with
     })
 
 @app.route('/graph_coloring')

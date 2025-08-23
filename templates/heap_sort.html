@@ -156,6 +156,47 @@
         .tree-node.swapping {
             background: #f39c12;
         }
+        
+        .legend-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .legend-color.blue { background: #3498db; }
+        .legend-color.red { background: #e74c3c; }
+        .legend-color.yellow { background: #f39c12; }
+        .legend-color.green { background: #27ae60; }
+        
+        .legend-note {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
     </style>
 </head>
 <body>
@@ -198,6 +239,30 @@
         <div class="visualization-section" id="visualizationSection" style="display: none;">
             <h2>Heap Sort Visualization</h2>
             
+            <!-- Heap Structure Legend -->
+            <div class="legend-section">
+                <h3>Heap Structure Legend</h3>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <span class="legend-color blue"></span>
+                        <span>Blue: Unsorted elements</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color red"></span>
+                        <span>Red: Currently being processed</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color yellow"></span>
+                        <span>Yellow: Elements being swapped</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color green"></span>
+                        <span>Green: Sorted elements</span>
+                    </div>
+                </div>
+                <p class="legend-note"><strong>Note:</strong> Lines connect each parent node to its children, showing the complete heap structure at each step.</p>
+            </div>
+            
             <div class="algorithm-tabs">
                 <button class="tab-button active" onclick="switchTab('topdown')">Top-Down Heap Sort</button>
                 <button class="tab-button" onclick="switchTab('bottomup')">Bottom-Up Heap Sort</button>
@@ -213,13 +278,13 @@
                     <!-- Heap tree visualization will be displayed here -->
                 </div>
                 
-                <div class="step-controls">
-                    <label>Step: <span id="topdownStep">0</span> / <span id="topdownTotalSteps">0</span></label>
-                    <input type="range" class="step-slider" id="topdownSlider" min="0" value="0">
-                    <button class="btn" onclick="previousStep('topdown')">Previous</button>
-                    <button class="btn" onclick="nextStep('topdown')">Next</button>
-                    <button class="btn" onclick="playAnimation('topdown')">Play Animation</button>
-                </div>
+                                 <div class="step-controls">
+                     <label>Step: <span id="topdownStep">0</span> / <span id="topdownTotalSteps">0</span></label>
+                     <input type="range" class="step-slider" id="topdownSlider" min="0" value="0" max="0">
+                     <button class="btn" onclick="previousStep('topdown')">Previous</button>
+                     <button class="btn" onclick="nextStep('topdown')">Next</button>
+                     <button class="btn" onclick="playAnimation('topdown')">Play Animation</button>
+                 </div>
             </div>
             
             <div class="tab-content" id="bottomup-tab">
@@ -232,13 +297,13 @@
                     <!-- Heap tree visualization will be displayed here -->
                 </div>
                 
-                <div class="step-controls">
-                    <label>Step: <span id="bottomupStep">0</span> / <span id="bottomupTotalSteps">0</span></label>
-                    <input type="range" class="step-slider" id="bottomupSlider" min="0" value="0">
-                    <button class="btn" onclick="previousStep('bottomup')">Previous</button>
-                    <button class="btn" onclick="nextStep('bottomup')">Next</button>
-                    <button class="btn" onclick="playAnimation('bottomup')">Play Animation</button>
-                </div>
+                                 <div class="step-controls">
+                     <label>Step: <span id="bottomupStep">0</span> / <span id="bottomupTotalSteps">0</span></label>
+                     <input type="range" class="step-slider" id="bottomupSlider" min="0" value="0" max="0">
+                     <button class="btn" onclick="previousStep('bottomup')">Previous</button>
+                     <button class="btn" onclick="nextStep('bottomup')">Next</button>
+                     <button class="btn" onclick="playAnimation('bottomup')">Play Animation</button>
+                 </div>
             </div>
             
             <div class="traversal-info">
@@ -309,92 +374,48 @@
                 return;
             }
 
-            // Generate steps for both algorithms
-            generateTopdownSteps();
-            generateBottomupSteps();
-            
-            // Show visualization section
-            document.getElementById('visualizationSection').style.display = 'block';
-            
-            // Update displays
-            updateTopdownDisplay();
-            updateBottomupDisplay();
+            // Send array to backend for heap sort visualization
+            fetch('/heap_sort/sort', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ array: currentArray })
+            })
+            .then(response => response.json())
+                         .then(data => {
+                 topdownSteps = data.topdown_steps;
+                 bottomupSteps = data.bottomup_steps;
+                 
+                 // Update total steps count and slider max values
+                 document.getElementById('topdownTotalSteps').textContent = topdownSteps.length;
+                 document.getElementById('bottomupTotalSteps').textContent = bottomupSteps.length;
+                 document.getElementById('topdownSlider').max = Math.max(0, topdownSteps.length - 1);
+                 document.getElementById('bottomupSlider').max = Math.max(0, bottomupSteps.length - 1);
+                 
+                 // Show visualization section
+                 document.getElementById('visualizationSection').style.display = 'block';
+                 
+                 // Update displays
+                 updateTopdownDisplay();
+                 updateBottomupDisplay();
+                 
+                 // Show success message
+                 if (data.message) {
+                     alert(data.message);
+                 }
+             })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error performing heap sort. Please try again.');
+            });
         }
 
-        function generateTopdownSteps() {
-            topdownSteps = [];
-            const arr = [...currentArray];
-            
-            // Build heap using top-down approach
-            for (let i = 0; i < arr.length; i++) {
-                siftUp(arr, i);
-                topdownSteps.push([...arr]);
-            }
-            
-            // Extract elements from heap
-            for (let i = arr.length - 1; i > 0; i--) {
-                [arr[0], arr[i]] = [arr[i], arr[0]];
-                topdownSteps.push([...arr]);
-                if (i > 1) {
-                    siftDown(arr, i, 0);
-                    topdownSteps.push([...arr]);
-                }
-            }
-            
-            document.getElementById('topdownTotalSteps').textContent = topdownSteps.length;
-        }
+        // Client-side heap sort functions removed - now using server-side visualization
 
-        function generateBottomupSteps() {
-            bottomupSteps = [];
-            const arr = [...currentArray];
-            
-            // Build heap using bottom-up approach
-            for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--) {
-                siftDown(arr, arr.length, i);
-                bottomupSteps.push([...arr]);
-            }
-            
-            // Extract elements from heap
-            for (let i = arr.length - 1; i > 0; i--) {
-                [arr[0], arr[i]] = [arr[i], arr[0]];
-                bottomupSteps.push([...arr]);
-                if (i > 1) {
-                    siftDown(arr, i, 0);
-                    bottomupSteps.push([...arr]);
-                }
-            }
-            
-            document.getElementById('bottomupTotalSteps').textContent = bottomupSteps.length;
-        }
+        // Client-side heap sort functions removed - now using server-side visualization
 
-        function siftUp(arr, i) {
-            while (i > 0) {
-                const parent = Math.floor((i - 1) / 2);
-                if (arr[parent] >= arr[i]) break;
-                [arr[parent], arr[i]] = [arr[i], arr[parent]];
-                i = parent;
-            }
-        }
-
-        function siftDown(arr, n, i) {
-            while (true) {
-                let largest = i;
-                const left = 2 * i + 1;
-                const right = 2 * i + 2;
-                
-                if (left < n && arr[left] > arr[largest]) {
-                    largest = left;
-                }
-                if (right < n && arr[right] > arr[largest]) {
-                    largest = right;
-                }
-                
-                if (largest === i) break;
-                
-                [arr[i], arr[largest]] = [arr[largest], arr[i]];
-                i = largest;
-            }
-        }
+        // Client-side heap sort functions removed - now using server-side visualization
 
         function updateTopdownDisplay() {
             if (topdownSteps.length === 0) return;
@@ -403,17 +424,20 @@
             const arrayDisplay = document.getElementById('topdownArray');
             const treeDisplay = document.getElementById('topdownTree');
             
-            // Update array display
-            arrayDisplay.innerHTML = step.map((num, index) => {
+            // Update array display with highlighting
+            arrayDisplay.innerHTML = step.array.map((num, index) => {
                 let className = 'array-element';
-                if (index >= step.length - currentTopdownStep) {
+                if (step.sorted_indices.includes(index)) {
                     className += ' sorted';
+                }
+                if (index === step.current_index) {
+                    className += ' current';
                 }
                 return `<div class="${className}">${num}</div>`;
             }).join('');
             
-            // Update tree display
-            updateHeapTree(treeDisplay, step);
+            // Display the heap visualization
+            treeDisplay.innerHTML = step.visualization;
             
             document.getElementById('topdownStep').textContent = currentTopdownStep + 1;
             document.getElementById('topdownSlider').value = currentTopdownStep;
@@ -426,49 +450,26 @@
             const arrayDisplay = document.getElementById('bottomupArray');
             const treeDisplay = document.getElementById('bottomupTree');
             
-            // Update array display
-            arrayDisplay.innerHTML = step.map((num, index) => {
+            // Update array display with highlighting
+            arrayDisplay.innerHTML = step.array.map((num, index) => {
                 let className = 'array-element';
-                if (index >= step.length - currentBottomupStep) {
+                if (step.sorted_indices.includes(index)) {
                     className += ' sorted';
+                }
+                if (index === step.current_index || index === step.swap_with) {
+                    className += ' current';
                 }
                 return `<div class="${className}">${num}</div>`;
             }).join('');
             
-            // Update tree display
-            updateHeapTree(treeDisplay, step);
+            // Display the heap visualization
+            treeDisplay.innerHTML = step.visualization;
             
             document.getElementById('bottomupStep').textContent = currentBottomupStep + 1;
             document.getElementById('bottomupSlider').value = currentBottomupStep;
         }
 
-        function updateHeapTree(container, arr) {
-            if (arr.length === 0) return;
-            
-            const levels = [];
-            let level = 0;
-            let start = 0;
-            
-            while (start < arr.length) {
-                const end = Math.min(start + Math.pow(2, level), arr.length);
-                levels.push(arr.slice(start, end));
-                start = end;
-                level++;
-            }
-            
-            container.innerHTML = levels.map((levelArr, levelIndex) => {
-                const levelHtml = levelArr.map((num, index) => {
-                    const globalIndex = levels.slice(0, levelIndex).reduce((sum, l) => sum + l.length, 0) + index;
-                    let className = 'tree-node';
-                    if (globalIndex >= arr.length - currentTopdownStep) {
-                        className += ' sorted';
-                    }
-                    return `<div class="${className}">${num}</div>`;
-                }).join('');
-                
-                return `<div class="tree-level">${levelHtml}</div>`;
-            }).join('');
-        }
+        // Client-side heap tree visualization removed - now using server-side Graphviz visualization
 
         function switchTab(algorithm) {
             // Hide all tab contents
