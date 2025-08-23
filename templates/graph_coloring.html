@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Coloring Visualizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .graph-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .input-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #6c7b7d 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+        }
+        .visualization-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .graph-display {
+            text-align: center;
+            margin: 20px 0;
+            min-height: 400px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        .graph-canvas {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .coloring-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e0e6ed;
+        }
+        .color-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .color-box {
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            border: 2px solid #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .matrix-input {
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 5px;
+            border: 2px solid #e0e6ed;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 18px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: #6c757d;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .matrix-preview {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border: 2px solid #e0e6ed;
+        }
+        .matrix-cell {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin: 2px;
+            background: white;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .matrix-cell.edge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        h1, h2 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .coloring-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .coloring-info p {
+            color: #495057;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .coloring-info strong {
+            color: #2c3e50;
+        }
+        .navigation-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .nav-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 0 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+        .nav-btn.secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+        .nav-btn.secondary:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #6c7b7d 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="graph-container">
+        <h1>Graph Coloring Visualizer</h1>
+        
+        <div class="input-section">
+            <h2>Graph Input Methods</h2>
+            
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('manual')">Manual Input</button>
+                <button class="tab-button" onclick="switchTab('random')">Random Graph</button>
+            </div>
+            
+            <div class="tab-content active" id="manual-tab">
+                <div class="input-group">
+                    <label>Number of Nodes:</label>
+                    <input type="number" id="nodeCount" min="1" max="20" value="5" onchange="generateMatrixInput()">
+                </div>
+                
+                <div class="input-group">
+                    <label>Adjacency Matrix (enter 1 for connected, 0 for not connected):</label>
+                    <textarea id="adjacencyMatrix" class="matrix-input" rows="5" placeholder="Enter adjacency matrix row by row..."></textarea>
+                    <button class="btn" onclick="generateMatrixInput()">Generate Matrix Input</button>
+                </div>
+                
+                <div class="matrix-preview" id="matrixPreview">
+                    <!-- Matrix preview will be displayed here -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="random-tab">
+                <div class="input-group">
+                    <label>Number of Nodes:</label>
+                    <input type="number" id="randomNodeCount" min="1" max="20" value="8">
+                </div>
+                
+                <div class="input-group">
+                    <label>Edge Probability (0.0 to 1.0):</label>
+                    <input type="range" id="edgeProbability" min="0" max="1" step="0.1" value="0.5">
+                    <span id="edgeProbValue">0.5</span>
+                </div>
+                
+                <button class="btn" onclick="generateRandomGraph()">Generate Random Graph</button>
+            </div>
+            
+            <button class="btn btn-success" onclick="performColoring()">Perform Graph Coloring</button>
+            <button class="btn btn-secondary" onclick="clearGraph()">Clear Graph</button>
+        </div>
+        
+        <div class="visualization-section" id="visualizationSection" style="display: none;">
+            <h2>Graph Coloring Visualization</h2>
+            
+            <div class="graph-display" id="graphDisplay">
+                <canvas id="graphCanvas" class="graph-canvas" width="600" height="400"></canvas>
+            </div>
+            
+            <div class="coloring-info">
+                <h3>Coloring Results</h3>
+                <p><strong>Node Colors:</strong> <span id="nodeColors">-</span></p>
+                <p><strong>Number of Colors Used:</strong> <span id="colorCount">-</span></p>
+                <p><strong>Valid Coloring:</strong> <span id="validColoring">-</span></p>
+                
+                <div class="color-legend" id="colorLegend">
+                    <!-- Color legend will be displayed here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <a href="/" class="nav-btn">Back to Home</a>
+            <a href="{{ url_for('avl_tree') }}" class="nav-btn secondary">AVL Tree</a>
+            <a href="{{ url_for('heap_sort') }}" class="nav-btn secondary">Heap Sort</a>
+        </div>
+    </div>
+
+    <script>
+        let currentGraph = null;
+        let nodePositions = [];
+        let coloring = {};
+        let colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'];
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Edge probability slider
+        document.getElementById('edgeProbability').addEventListener('input', function(e) {
+            document.getElementById('edgeProbValue').textContent = e.target.value;
+        });
+
+        // Generate matrix input fields
+        function generateMatrixInput() {
+            const nodeCount = parseInt(document.getElementById('nodeCount').value);
+            const matrix = document.getElementById('adjacencyMatrix');
+            
+            let matrixText = '';
+            for (let i = 0; i < nodeCount; i++) {
+                for (let j = 0; j < nodeCount; j++) {
+                    if (i === j) {
+                        matrixText += '0 '; // No self-loops
+                    } else if (i < j) {
+                        matrixText += '1 '; // Default to connected
+                    } else {
+                        matrixText += '0 '; // Lower triangle
+                    }
+                }
+                matrixText += '\n';
+            }
+            
+            matrix.value = matrixText.trim();
+            updateMatrixPreview();
+        }
+
+        // Update matrix preview
+        function updateMatrixPreview() {
+            const matrixText = document.getElementById('adjacencyMatrix').value;
+            const preview = document.getElementById('matrixPreview');
+            
+            if (!matrixText.trim()) {
+                preview.innerHTML = '<p>Enter adjacency matrix to see preview</p>';
+                return;
+            }
+            
+            try {
+                const matrix = matrixText.trim().split('\n').map(row => 
+                    row.trim().split(/\s+/).map(num => parseInt(num))
+                );
+                
+                let previewHtml = '<h4>Matrix Preview:</h4>';
+                previewHtml += '<div style="text-align: center;">';
+                
+                matrix.forEach((row, i) => {
+                    row.forEach((cell, j) => {
+                        const className = cell === 1 ? 'matrix-cell edge' : 'matrix-cell';
+                        previewHtml += `<div class="${className}">${cell}</div>`;
+                    });
+                    previewHtml += '<br>';
+                });
+                
+                previewHtml += '</div>';
+                preview.innerHTML = previewHtml;
+            } catch (e) {
+                preview.innerHTML = '<p>Invalid matrix format</p>';
+            }
+        }
+
+        // Generate random graph
+        function generateRandomGraph() {
+            const nodeCount = parseInt(document.getElementById('randomNodeCount').value);
+            const edgeProb = parseFloat(document.getElementById('edgeProbability').value);
+            
+            currentGraph = { nodes: [], edges: [] };
+            
+            // Add nodes
+            for (let i = 0; i < nodeCount; i++) {
+                currentGraph.nodes.push(i);
+            }
+            
+            // Add edges based on probability
+            for (let i = 0; i < nodeCount; i++) {
+                for (let j = i + 1; j < nodeCount; j++) {
+                    if (Math.random() < edgeProb) {
+                        currentGraph.edges.push([i, j]);
+                    }
+                }
+            }
+            
+            // Generate positions for nodes
+            generateNodePositions(nodeCount);
+            
+            // Display the graph
+            drawGraph();
+            
+            // Show visualization section
+            document.getElementById('visualizationSection').style.display = 'block';
+        }
+
+        // Generate node positions in a circle
+        function generateNodePositions(nodeCount) {
+            nodePositions = [];
+            const centerX = 300;
+            const centerY = 200;
+            const radius = 150;
+            
+            for (let i = 0; i < nodeCount; i++) {
+                const angle = (2 * Math.PI * i) / nodeCount;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                nodePositions.push({ x, y });
+            }
+        }
+
+        // Draw the graph
+        function drawGraph() {
+            const canvas = document.getElementById('graphCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (!currentGraph) return;
+            
+            // Draw edges
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            currentGraph.edges.forEach(([u, v]) => {
+                ctx.beginPath();
+                ctx.moveTo(nodePositions[u].x, nodePositions[u].y);
+                ctx.lineTo(nodePositions[v].x, nodePositions[v].y);
+                ctx.stroke();
+            });
+            
+            // Draw nodes
+            currentGraph.nodes.forEach((node, index) => {
+                const pos = nodePositions[index];
+                const color = coloring[node] !== undefined ? colors[coloring[node]] : '#fff';
+                
+                // Node circle
+                ctx.fillStyle = color;
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 25, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Node label
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node, pos.x, pos.y);
+            });
+        }
+
+        // Perform graph coloring
+        function performColoring() {
+            if (!currentGraph) {
+                // Parse manual input
+                const nodeCount = parseInt(document.getElementById('nodeCount').value);
+                const matrixText = document.getElementById('adjacencyMatrix').value;
+                
+                if (!matrixText.trim()) {
+                    alert('Please enter the adjacency matrix or generate a random graph.');
+                    return;
+                }
+                
+                try {
+                    const matrix = matrixText.trim().split('\n').map(row => 
+                        row.trim().split(/\s+/).map(num => parseInt(num))
+                    );
+                    
+                    if (matrix.length !== nodeCount || matrix.some(row => row.length !== nodeCount)) {
+                        alert('Matrix dimensions do not match the number of nodes.');
+                        return;
+                    }
+                    
+                    currentGraph = { nodes: [], edges: [] };
+                    for (let i = 0; i < nodeCount; i++) {
+                        currentGraph.nodes.push(i);
+                    }
+                    
+                    for (let i = 0; i < nodeCount; i++) {
+                        for (let j = i + 1; j < nodeCount; j++) {
+                            if (matrix[i][j] === 1) {
+                                currentGraph.edges.push([i, j]);
+                            }
+                        }
+                    }
+                    
+                    generateNodePositions(nodeCount);
+                } catch (e) {
+                    alert('Invalid matrix format. Please check your input.');
+                    return;
+                }
+            }
+            
+            // Perform greedy coloring
+            coloring = greedyColoring();
+            
+            // Display results
+            displayColoringResults();
+            
+            // Redraw graph with colors
+            drawGraph();
+            
+            // Show visualization section
+            document.getElementById('visualizationSection').style.display = 'block';
+        }
+
+        // Greedy coloring algorithm
+        function greedyColoring() {
+            const result = {};
+            const usedColors = new Set();
+            
+            currentGraph.nodes.forEach(node => {
+                const adjacentColors = new Set();
+                
+                // Find colors used by adjacent nodes
+                currentGraph.edges.forEach(([u, v]) => {
+                    if (u === node && result[v] !== undefined) {
+                        adjacentColors.add(result[v]);
+                    } else if (v === node && result[u] !== undefined) {
+                        adjacentColors.add(result[u]);
+                    }
+                });
+                
+                // Find the first available color
+                let color = 0;
+                while (adjacentColors.has(color)) {
+                    color++;
+                }
+                
+                result[node] = color;
+                usedColors.add(color);
+            });
+            
+            return result;
+        }
+
+        // Display coloring results
+        function displayColoringResults() {
+            const colorCount = new Set(Object.values(coloring)).size;
+            const isValid = validateColoring();
+            
+            document.getElementById('nodeColors').textContent = 
+                Object.entries(coloring).map(([node, color]) => `Node ${node}: Color ${color}`).join(', ');
+            document.getElementById('colorCount').textContent = colorCount;
+            document.getElementById('validColoring').textContent = isValid ? 'Yes' : 'No';
+            
+            // Update color legend
+            updateColorLegend();
+        }
+
+        // Validate coloring
+        function validateColoring() {
+            return currentGraph.edges.every(([u, v]) => coloring[u] !== coloring[v]);
+        }
+
+        // Update color legend
+        function updateColorLegend() {
+            const legend = document.getElementById('colorLegend');
+            const usedColors = new Set(Object.values(coloring));
+            
+            legend.innerHTML = Array.from(usedColors).map(colorIndex => `
+                <div class="color-item">
+                    <div class="color-box" style="background-color: ${colors[colorIndex]}"></div>
+                    <span>Color ${colorIndex}</span>
+                </div>
+            `).join('');
+        }
+
+        // Clear graph
+        function clearGraph() {
+            currentGraph = null;
+            coloring = {};
+            nodePositions = [];
+            document.getElementById('visualizationSection').style.display = 'none';
+            document.getElementById('adjacencyMatrix').value = '';
+            document.getElementById('nodeCount').value = '5';
+            document.getElementById('randomNodeCount').value = '8';
+            document.getElementById('edgeProbability').value = '0.5';
+            document.getElementById('edgeProbValue').textContent = '0.5';
+            document.getElementById('matrixPreview').innerHTML = '<p>Enter adjacency matrix to see preview</p>';
+        }
+
+        // Initialize
+        generateMatrixInput();
+    </script>
+</body>
+</html>

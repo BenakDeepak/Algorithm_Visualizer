@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Sort Visualizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .heap-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .input-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .btn-success {
+            background: #27ae60;
+        }
+        .btn-success:hover {
+            background: #229954;
+        }
+        .visualization-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .array-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .array-element {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background: #3498db;
+            color: white;
+            margin: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .array-element.sorted {
+            background: #27ae60;
+        }
+        .array-element.current {
+            background: #e74c3c;
+            transform: scale(1.1);
+        }
+        .array-element.swapping {
+            background: #f39c12;
+            transform: scale(1.2);
+        }
+        .step-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .step-slider {
+            width: 80%;
+            margin: 10px 0;
+        }
+        .algorithm-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            background: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .tab-button.active {
+            background: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .heap-tree {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .tree-level {
+            margin: 10px 0;
+        }
+        .tree-node {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background: #3498db;
+            color: white;
+            margin: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            position: relative;
+        }
+        .tree-node.sorted {
+            background: #27ae60;
+        }
+        .tree-node.current {
+            background: #e74c3c;
+        }
+        .tree-node.swapping {
+            background: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <div class="heap-container">
+        <h1>Heap Sort Visualizer</h1>
+        
+        <div class="input-section">
+            <h2>Input Methods</h2>
+            
+            <!-- File Upload -->
+            <div class="input-group">
+                <label>Upload File (TXT format):</label>
+                <input type="file" id="fileInput" accept=".txt">
+            </div>
+            
+            <!-- Manual Input -->
+            <div class="input-group">
+                <label>Manual Input:</label>
+                <textarea id="manualInput" rows="3" placeholder="Enter numbers separated by spaces (e.g., 64 34 25 12 22 11 90)"></textarea>
+            </div>
+            
+            <!-- Random Generation -->
+            <div class="input-group">
+                <label>Generate Random Array:</label>
+                <input type="number" id="randomSize" placeholder="Size" value="10" min="1" max="50">
+                <button class="btn" onclick="generateRandomArray()">Generate</button>
+            </div>
+            
+            <!-- Single Element Addition -->
+            <div class="input-group">
+                <label>Add Single Element:</label>
+                <input type="number" id="singleInput" placeholder="Enter a number">
+                <button class="btn" onclick="addSingleElement()">Add</button>
+            </div>
+            
+            <button class="btn btn-success" onclick="startHeapSort()">Start Heap Sort</button>
+            <button class="btn btn-secondary" onclick="clearArray()">Clear Array</button>
+        </div>
+        
+        <div class="visualization-section" id="visualizationSection" style="display: none;">
+            <h2>Heap Sort Visualization</h2>
+            
+            <div class="algorithm-tabs">
+                <button class="tab-button active" onclick="switchTab('topdown')">Top-Down Heap Sort</button>
+                <button class="tab-button" onclick="switchTab('bottomup')">Bottom-Up Heap Sort</button>
+            </div>
+            
+            <div class="tab-content active" id="topdown-tab">
+                <h3>Top-Down Heap Sort</h3>
+                <div class="array-display" id="topdownArray">
+                    <!-- Array visualization will be displayed here -->
+                </div>
+                
+                <div class="heap-tree" id="topdownTree">
+                    <!-- Heap tree visualization will be displayed here -->
+                </div>
+                
+                <div class="step-controls">
+                    <label>Step: <span id="topdownStep">0</span> / <span id="topdownTotalSteps">0</span></label>
+                    <input type="range" class="step-slider" id="topdownSlider" min="0" value="0">
+                    <button class="btn" onclick="previousStep('topdown')">Previous</button>
+                    <button class="btn" onclick="nextStep('topdown')">Next</button>
+                    <button class="btn" onclick="playAnimation('topdown')">Play Animation</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="bottomup-tab">
+                <h3>Bottom-Up Heap Sort</h3>
+                <div class="array-display" id="bottomupArray">
+                    <!-- Array visualization will be displayed here -->
+                </div>
+                
+                <div class="heap-tree" id="bottomupTree">
+                    <!-- Heap tree visualization will be displayed here -->
+                </div>
+                
+                <div class="step-controls">
+                    <label>Step: <span id="bottomupStep">0</span> / <span id="bottomupTotalSteps">0</span></label>
+                    <input type="range" class="step-slider" id="bottomupSlider" min="0" value="0">
+                    <button class="btn" onclick="previousStep('bottomup')">Previous</button>
+                    <button class="btn" onclick="nextStep('bottomup')">Next</button>
+                    <button class="btn" onclick="playAnimation('bottomup')">Play Animation</button>
+                </div>
+            </div>
+            
+            <div class="traversal-info">
+                <h3>Sorting Information</h3>
+                <p><strong>Original Array:</strong> <span id="originalArray">-</span></p>
+                <p><strong>Sorted Array:</strong> <span id="sortedArray">-</span></p>
+                <p><strong>Total Steps:</strong> <span id="totalSteps">0</span></p>
+            </div>
+        </div>
+        
+        <a href="/" class="button">Back to Home</a>
+    </div>
+
+    <script>
+        let currentArray = [];
+        let topdownSteps = [];
+        let bottomupSteps = [];
+        let currentTopdownStep = 0;
+        let currentBottomupStep = 0;
+        let animationInterval = null;
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    currentArray = content.trim().split(/\s+/).map(num => parseInt(num)).filter(num => !isNaN(num));
+                    document.getElementById('manualInput').value = currentArray.join(' ');
+                    updateArrayDisplay();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function generateRandomArray() {
+            const size = parseInt(document.getElementById('randomSize').value);
+            currentArray = Array.from({length: size}, () => Math.floor(Math.random() * 100) + 1);
+            document.getElementById('manualInput').value = currentArray.join(' ');
+            updateArrayDisplay();
+        }
+
+        function addSingleElement() {
+            const input = document.getElementById('singleInput');
+            const num = parseInt(input.value);
+            if (!isNaN(num)) {
+                currentArray.push(num);
+                document.getElementById('manualInput').value = currentArray.join(' ');
+                input.value = '';
+                updateArrayDisplay();
+            }
+        }
+
+        function clearArray() {
+            currentArray = [];
+            document.getElementById('manualInput').value = '';
+            document.getElementById('visualizationSection').style.display = 'none';
+        }
+
+        function updateArrayDisplay() {
+            document.getElementById('originalArray').textContent = currentArray.join(', ');
+        }
+
+        function startHeapSort() {
+            if (currentArray.length === 0) {
+                alert('Please enter some numbers first.');
+                return;
+            }
+
+            // Generate steps for both algorithms
+            generateTopdownSteps();
+            generateBottomupSteps();
+            
+            // Show visualization section
+            document.getElementById('visualizationSection').style.display = 'block';
+            
+            // Update displays
+            updateTopdownDisplay();
+            updateBottomupDisplay();
+        }
+
+        function generateTopdownSteps() {
+            topdownSteps = [];
+            const arr = [...currentArray];
+            
+            // Build heap using top-down approach
+            for (let i = 0; i < arr.length; i++) {
+                siftUp(arr, i);
+                topdownSteps.push([...arr]);
+            }
+            
+            // Extract elements from heap
+            for (let i = arr.length - 1; i > 0; i--) {
+                [arr[0], arr[i]] = [arr[i], arr[0]];
+                topdownSteps.push([...arr]);
+                if (i > 1) {
+                    siftDown(arr, i, 0);
+                    topdownSteps.push([...arr]);
+                }
+            }
+            
+            document.getElementById('topdownTotalSteps').textContent = topdownSteps.length;
+        }
+
+        function generateBottomupSteps() {
+            bottomupSteps = [];
+            const arr = [...currentArray];
+            
+            // Build heap using bottom-up approach
+            for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--) {
+                siftDown(arr, arr.length, i);
+                bottomupSteps.push([...arr]);
+            }
+            
+            // Extract elements from heap
+            for (let i = arr.length - 1; i > 0; i--) {
+                [arr[0], arr[i]] = [arr[i], arr[0]];
+                bottomupSteps.push([...arr]);
+                if (i > 1) {
+                    siftDown(arr, i, 0);
+                    bottomupSteps.push([...arr]);
+                }
+            }
+            
+            document.getElementById('bottomupTotalSteps').textContent = bottomupSteps.length;
+        }
+
+        function siftUp(arr, i) {
+            while (i > 0) {
+                const parent = Math.floor((i - 1) / 2);
+                if (arr[parent] >= arr[i]) break;
+                [arr[parent], arr[i]] = [arr[i], arr[parent]];
+                i = parent;
+            }
+        }
+
+        function siftDown(arr, n, i) {
+            while (true) {
+                let largest = i;
+                const left = 2 * i + 1;
+                const right = 2 * i + 2;
+                
+                if (left < n && arr[left] > arr[largest]) {
+                    largest = left;
+                }
+                if (right < n && arr[right] > arr[largest]) {
+                    largest = right;
+                }
+                
+                if (largest === i) break;
+                
+                [arr[i], arr[largest]] = [arr[largest], arr[i]];
+                i = largest;
+            }
+        }
+
+        function updateTopdownDisplay() {
+            if (topdownSteps.length === 0) return;
+            
+            const step = topdownSteps[currentTopdownStep];
+            const arrayDisplay = document.getElementById('topdownArray');
+            const treeDisplay = document.getElementById('topdownTree');
+            
+            // Update array display
+            arrayDisplay.innerHTML = step.map((num, index) => {
+                let className = 'array-element';
+                if (index >= step.length - currentTopdownStep) {
+                    className += ' sorted';
+                }
+                return `<div class="${className}">${num}</div>`;
+            }).join('');
+            
+            // Update tree display
+            updateHeapTree(treeDisplay, step);
+            
+            document.getElementById('topdownStep').textContent = currentTopdownStep + 1;
+            document.getElementById('topdownSlider').value = currentTopdownStep;
+        }
+
+        function updateBottomupDisplay() {
+            if (bottomupSteps.length === 0) return;
+            
+            const step = bottomupSteps[currentBottomupStep];
+            const arrayDisplay = document.getElementById('bottomupArray');
+            const treeDisplay = document.getElementById('bottomupTree');
+            
+            // Update array display
+            arrayDisplay.innerHTML = step.map((num, index) => {
+                let className = 'array-element';
+                if (index >= step.length - currentBottomupStep) {
+                    className += ' sorted';
+                }
+                return `<div class="${className}">${num}</div>`;
+            }).join('');
+            
+            // Update tree display
+            updateHeapTree(treeDisplay, step);
+            
+            document.getElementById('bottomupStep').textContent = currentBottomupStep + 1;
+            document.getElementById('bottomupSlider').value = currentBottomupStep;
+        }
+
+        function updateHeapTree(container, arr) {
+            if (arr.length === 0) return;
+            
+            const levels = [];
+            let level = 0;
+            let start = 0;
+            
+            while (start < arr.length) {
+                const end = Math.min(start + Math.pow(2, level), arr.length);
+                levels.push(arr.slice(start, end));
+                start = end;
+                level++;
+            }
+            
+            container.innerHTML = levels.map((levelArr, levelIndex) => {
+                const levelHtml = levelArr.map((num, index) => {
+                    const globalIndex = levels.slice(0, levelIndex).reduce((sum, l) => sum + l.length, 0) + index;
+                    let className = 'tree-node';
+                    if (globalIndex >= arr.length - currentTopdownStep) {
+                        className += ' sorted';
+                    }
+                    return `<div class="${className}">${num}</div>`;
+                }).join('');
+                
+                return `<div class="tree-level">${levelHtml}</div>`;
+            }).join('');
+        }
+
+        function switchTab(algorithm) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            if (algorithm === 'topdown') {
+                document.getElementById('topdown-tab').classList.add('active');
+                document.querySelectorAll('.tab-button')[0].classList.add('active');
+            } else {
+                document.getElementById('bottomup-tab').classList.add('active');
+                document.querySelectorAll('.tab-button')[1].classList.add('active');
+            }
+        }
+
+        function previousStep(algorithm) {
+            if (algorithm === 'topdown' && currentTopdownStep > 0) {
+                currentTopdownStep--;
+                updateTopdownDisplay();
+            } else if (algorithm === 'bottomup' && currentBottomupStep > 0) {
+                currentBottomupStep--;
+                updateBottomupDisplay();
+            }
+        }
+
+        function nextStep(algorithm) {
+            if (algorithm === 'topdown' && currentTopdownStep < topdownSteps.length - 1) {
+                currentTopdownStep++;
+                updateTopdownDisplay();
+            } else if (algorithm === 'bottomup' && currentBottomupStep < bottomupSteps.length - 1) {
+                currentBottomupStep++;
+                updateBottomupDisplay();
+            }
+        }
+
+        function playAnimation(algorithm) {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+                return;
+            }
+            
+            const steps = algorithm === 'topdown' ? topdownSteps : bottomupSteps;
+            let currentStep = algorithm === 'topdown' ? currentTopdownStep : currentBottomupStep;
+            
+            animationInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    if (algorithm === 'topdown') {
+                        currentTopdownStep = currentStep;
+                        updateTopdownDisplay();
+                    } else {
+                        currentBottomupStep = currentStep;
+                        updateBottomupDisplay();
+                    }
+                } else {
+                    clearInterval(animationInterval);
+                    animationInterval = null;
+                }
+            }, 1000);
+        }
+
+        // Initialize
+        updateArrayDisplay();
+    </script>
+</body>
+</html>
