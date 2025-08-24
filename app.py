@@ -16,7 +16,9 @@ class Node:
         self.left = None
         self.right = None
         self.height = 1
-
+@app.route('/')
+def index():
+    return render_template('index.html')
 # AVL Tree functions
 def height(node):
     if node is None:
