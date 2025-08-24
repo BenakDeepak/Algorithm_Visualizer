@@ -522,5 +522,10 @@ def graph_coloring_api():
         'nodes': list(G.nodes())
     })
 
+# Route for AVL Tree page
+@app.route('/avl_tree')
+def avl_tree():
+        return render_template('avl_tree.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
