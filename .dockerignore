@@ -6,3 +6,4 @@ __pycache__/
 *.db
 *.csv
 node_modules/
+env/
