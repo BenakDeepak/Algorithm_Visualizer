@@ -10,248 +10,225 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        .input-section {
+        
+        /* Visualization container styles */
+        .visualization-section {
+            margin-top: 20px;
+        }
+        
+        .tab-content {
             background: white;
             padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* SVG container - reduced to 1/4th size */
+        
+        
+        /* Custom scrollbar */
+        .heap-svg-container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .heap-svg-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .heap-svg-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .heap-svg-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        /* Replace the existing .heap-svg-container styles in your HTML with this: */
+
+.heap-svg-container {
+    width: 100px;              /* Fixed 100px width */
+    height: 100px;             /* Fixed 100px height */
+    overflow: hidden;          /* Hide overflow instead of scroll */
+    margin: 10px auto;
+    padding: 0;                /* Remove padding */
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e0e6ed;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;       /* Center vertically */
+    justify-content: center;   /* Center horizontally */
+}
+
+/* Remove the transform scaling and let your Python function handle sizing */
+.heap-svg-container svg {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    /* Remove the transform: scale(0.25) line completely */
+    object-fit: contain;       /* Maintain aspect ratio within container */
+}
+
+/* Update mobile responsive */
+@media (max-width: 768px) {
+    .heap-svg-container {
+        width: 80px;           /* Smaller on mobile */
+        height: 80px;
+    }
+}
+        .input-section, .visualization-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .input-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
         }
         .input-group input, .input-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 12px;
             font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
         }
         .btn {
-            background: #3498db;
+            background: #667eea;
             color: white;
-            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
             margin-right: 10px;
             margin-bottom: 10px;
         }
         .btn:hover {
-            background: #2980b9;
+            background: #5a6fd4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .btn-secondary {
-            background: #95a5a6;
+            background: #6c757d;
         }
         .btn-secondary:hover {
-            background: #7f8c8d;
+            background: #5a6268;
         }
-        .btn-success {
-            background: #27ae60;
-        }
-        .btn-success:hover {
-            background: #229954;
-        }
-        .visualization-section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .array-display {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .array-element {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            line-height: 50px;
-            text-align: center;
-            background: #3498db;
-            color: white;
-            margin: 5px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .array-element.sorted {
-            background: #27ae60;
-        }
-        .array-element.current {
-            background: #e74c3c;
-            transform: scale(1.1);
-        }
-        .array-element.swapping {
-            background: #f39c12;
-            transform: scale(1.2);
-        }
-        .step-controls {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .step-slider {
-            width: 80%;
-            margin: 10px 0;
-        }
-        .algorithm-tabs {
+        .tabs {
             display: flex;
             margin-bottom: 20px;
+            border-bottom: 2px solid #e0e6ed;
+            padding-bottom: 10px;
         }
         .tab-button {
-            flex: 1;
-            padding: 15px;
-            background: #ecf0f1;
+            padding: 12px 24px;
+            background: none;
             border: none;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
+            color: #6c757d;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s ease;
         }
         .tab-button.active {
-            background: #3498db;
-            color: white;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        .tab-button:hover:not(.active) {
+            background: rgba(108, 117, 125, 0.1);
         }
         .tab-content {
             display: none;
+            padding: 20px 0;
         }
         .tab-content.active {
             display: block;
         }
-        .heap-tree {
-            margin: 20px 0;
-            text-align: center;
-        }
-        .tree-level {
-            margin: 10px 0;
-        }
-        .tree-node {
-            display: inline-block;
-            width: 40px;
+        .array-element {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
             height: 40px;
-            line-height: 40px;
-            text-align: center;
-            background: #3498db;
-            color: white;
             margin: 5px;
-            border-radius: 5px;
-            font-weight: bold;
-            position: relative;
-        }
-        .tree-node.sorted {
-            background: #27ae60;
-        }
-        .tree-node.current {
-            background: #e74c3c;
-        }
-        .tree-node.swapping {
-            background: #f39c12;
-        }
-        
-        .legend-section {
+            padding: 0 10px;
             background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #e9ecef;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: all 0.3s ease;
         }
-        
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
+        .array-element.sorted {
+            background: #4CAF50;
+            color: white;
+            border-color: #3d8b40;
         }
-        
-        .legend-item {
+        .array-element.current {
+            background: #ff9800;
+            color: white;
+            border-color: #e68a00;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .controls {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        
-        .legend-color.blue { background: #3498db; }
-        .legend-color.red { background: #e74c3c; }
-        .legend-color.yellow { background: #f39c12; }
-        .legend-color.green { background: #27ae60; }
-        
-        .legend-note {
-            margin-top: 15px;
-            padding: 10px;
-            background: #e3f2fd;
-            border-radius: 5px;
-            border-left: 4px solid #2196f3;
-        }
-        
-        .time-complexity-chart {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .complexity-notes {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        
-        .comparison-table {
+            gap: 15px;
             margin-top: 20px;
-            overflow-x: auto;
+            padding: 15px 0;
+            border-top: 1px solid #e0e6ed;
         }
-        
-        .comparison-table table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        .controls button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #e9ecef;
+            color: #495057;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        
-        .comparison-table th, 
-        .comparison-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .controls button:hover {
+            background: #dee2e6;
         }
-        
-        .comparison-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        
-        .comparison-table tr:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .complexity-notes h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-        
-        .complexity-notes ul {
-            padding-left: 20px;
-        }
-        
-        .complexity-notes li {
-            margin-bottom: 8px;
-            line-height: 1.5;
+        #arrayDisplay {
+            min-height: 50px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px dashed #e0e6ed;
         }
     </style>
 </head>
@@ -260,195 +237,101 @@
         <h1>Heap Sort Visualizer</h1>
         
         <div class="input-section">
-            <h2>Input Methods</h2>
-            
-            <!-- File Upload -->
+            <h2>Input Array</h2>
             <div class="input-group">
-                <label>Upload File (TXT format):</label>
-                <input type="file" id="fileInput" accept=".txt">
+                <label for="manualInput">Enter numbers (space-separated):</label>
+                <input type="text" id="manualInput" placeholder="e.g., 5 3 8 1 9 4 7">
             </div>
-            
-            <!-- Manual Input -->
             <div class="input-group">
-                <label>Manual Input:</label>
-                <textarea id="manualInput" rows="3" placeholder="Enter numbers separated by spaces (e.g., 64 34 25 12 22 11 90)"></textarea>
+                <label for="randomSize">Or generate random array:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="number" id="randomSize" value="10" min="1" max="20" style="width: 80px; padding: 8px;">
+                    <button class="btn" onclick="generateRandomArray()">Generate</button>
+                </div>
             </div>
-            
-            <!-- Random Generation -->
             <div class="input-group">
-                <label>Generate Random Array:</label>
-                <input type="number" id="randomSize" placeholder="Size" value="10" min="1" max="50">
-                <button class="btn" onclick="generateRandomArray()">Generate</button>
-            </div>
-            
-            <!-- Single Element Addition -->
-            <div class="input-group">
-                <label>Add Single Element:</label>
-                <input type="number" id="singleInput" placeholder="Enter a number">
-                <button class="btn" onclick="addSingleElement()">Add</button>
-            </div>
-            
-            <button class="btn btn-success" onclick="startHeapSort()">Start Heap Sort</button>
-            <button class="btn btn-secondary" onclick="clearArray()">Clear Array</button>
-        </div>
-        
-        <div class="visualization-section" id="visualizationSection" style="display: none;">
-            <h2>Heap Sort Visualization</h2>
-            
-            <!-- Heap Structure Legend -->
-            <div class="legend-section">
-                <h3>Heap Structure Legend</h3>
-                <div class="legend-grid">
-                    <div class="legend-item">
-                        <span class="legend-color blue"></span>
-                        <span>Blue: Unsorted elements</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color red"></span>
-                        <span>Red: Currently being processed</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color yellow"></span>
-                        <span>Yellow: Elements being swapped</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color green"></span>
-                        <span>Green: Sorted elements</span>
-                    </div>
+                <label for="fileInput">Or upload from file:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="file" id="fileInput" accept=".txt" style="flex-grow: 1; padding: 8px;">
+                    <button class="btn btn-secondary" onclick="clearArray()">Clear</button>
                 </div>
-                <p class="legend-note"><strong>Note:</strong> Lines connect each parent node to its children, showing the complete heap structure at each step.</p>
             </div>
-            
-            <div class="algorithm-tabs">
-                <button class="tab-button active" onclick="switchTab('topdown')">Top-Down Heap Sort</button>
-                <button class="tab-button" onclick="switchTab('bottomup')">Bottom-Up Heap Sort</button>
-            </div>
-            
-            <div class="tab-content active" id="topdown-tab">
-                <h3>Top-Down Heap Sort</h3>
-                <div class="array-display" id="topdownArray">
-                    <!-- Array visualization will be displayed here -->
-                </div>
-                
-                <div class="heap-tree" id="topdownTree">
-                    <!-- Heap tree visualization will be displayed here -->
-                </div>
-                
-                                 <div class="step-controls">
-                     <label>Step: <span id="topdownStep">0</span> / <span id="topdownTotalSteps">0</span></label>
-                     <input type="range" class="step-slider" id="topdownSlider" min="0" value="0" max="0">
-                     <button class="btn" onclick="previousStep('topdown')">Previous</button>
-                     <button class="btn" onclick="nextStep('topdown')">Next</button>
-                     <button class="btn" onclick="playAnimation('topdown')">Play Animation</button>
-                 </div>
-            </div>
-            
-            <div class="tab-content" id="bottomup-tab">
-                <h3>Bottom-Up Heap Sort</h3>
-                <div class="array-display" id="bottomupArray">
-                    <!-- Array visualization will be displayed here -->
-                </div>
-                
-                <div class="heap-tree" id="bottomupTree">
-                    <!-- Heap tree visualization will be displayed here -->
-                </div>
-                
-                                 <div class="step-controls">
-                     <label>Step: <span id="bottomupStep">0</span> / <span id="bottomupTotalSteps">0</span></label>
-                     <input type="range" class="step-slider" id="bottomupSlider" min="0" value="0" max="0">
-                     <button class="btn" onclick="previousStep('bottomup')">Previous</button>
-                     <button class="btn" onclick="nextStep('bottomup')">Next</button>
-                     <button class="btn" onclick="playAnimation('bottomup')">Play Animation</button>
-                 </div>
-            </div>
-            
-            <div class="traversal-info">
-                <h3>Sorting Information</h3>
-                <p><strong>Original Array:</strong> <span id="originalArray">-</span></p>
-                <p><strong>Sorted Array:</strong> <span id="sortedArray">-</span></p>
-                <p><strong>Total Steps:</strong> <span id="totalSteps">0</span></p>
+            <div id="arrayDisplay" style="min-height: 60px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 15px 0;"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="startHeapSort()" style="padding: 12px 40px; font-size: 18px;">
+                    Start Heap Sort
+                </button>
             </div>
         </div>
-        
-        <a href="/" class="button">Back to Home</a>
-    </div>
 
-    <!-- Time Complexity Section -->
-    <div class="visualization-section">
-        <h2>Time Complexity Comparison</h2>
-        <div class="time-complexity-chart">
+        <div class="visualization-section" id="visualizationSection" style="display: none;">
+            <h2 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">Heap Sort Visualization</h2>
+            
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('topdown')">Top-Down</button>
+                <button class="tab-button" onclick="switchTab('bottomup')">Bottom-Up</button>
+            </div>
+            
+            <div id="topdownContent" class="tab-content active">
+                <div id="topdownArray" style="margin: 10px 0;"></div>
+                <div id="topdownHeap" style="text-align: center;"></div>
+                <div class="controls">
+                    <button class="btn" onclick="previousStep('topdown')" style="background: #6c757d;">
+                        <i class="fas fa-step-backward"></i> Previous
+                    </button>
+                    <span id="topdownStep" style="flex-grow: 1; text-align: center; font-weight: 600; color: #2c3e50;">
+                        Step: 0/0
+                    </span>
+                    <button class="btn" onclick="nextStep('topdown')" style="background: #6c757d;">
+                        Next <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="btn" onclick="resetAnimation('topdown')" style="background: #dc3545;">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+            
+            <div id="bottomupContent" class="tab-content">
+                <div id="bottomupArray" style="margin: 10px 0;"></div>
+                <div id="bottomupHeap" style="text-align: center;"></div>
+                <div class="controls">
+                    <button class="btn" onclick="previousStep('bottomup')" style="background: #6c757d;">
+                        <i class="fas fa-step-backward"></i> Previous
+                    </button>
+                    <span id="bottomupStep" style="flex-grow: 1; text-align: center; font-weight: 600; color: #2c3e50;">
+                        Step: 0/0
+                    </span>
+                    <button class="btn" onclick="nextStep('bottomup')" style="background: #6c757d;">
+                        Next <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="btn" onclick="resetAnimation('bottomup')" style="background: #dc3545;">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization-section">
+            <h2>Time Complexity</h2>
             <canvas id="complexityChart"></canvas>
         </div>
-        <div class="complexity-notes">
-            <h3>Time Complexity Analysis</h3>
-            <ul>
-                <li><strong>Best Case:</strong> O(n log n) - When the array is already sorted</li>
-                <li><strong>Average Case:</strong> O(n log n) - For random data</li>
-                <li><strong>Worst Case:</strong> O(n log n) - Maintains consistent performance</li>
-            </ul>
-            <div class="comparison-table">
-                <table>
-                    <tr>
-                        <th>Algorithm</th>
-                        <th>Best</th>
-                        <th>Average</th>
-                        <th>Worst</th>
-                    </tr>
-                    <tr>
-                        <td>Heap Sort</td>
-                        <td>O(n log n)</td>
-                        <td>O(n log n)</td>
-                        <td>O(n log n)</td>
-                    </tr>
-                    <tr>
-                        <td>Quick Sort</td>
-                        <td>O(n log n)</td>
-                        <td>O(n log n)</td>
-                        <td>O(n²)</td>
-                    </tr>
-                    <tr>
-                        <td>Merge Sort</td>
-                        <td>O(n log n)</td>
-                        <td>O(n log n)</td>
-                        <td>O(n log n)</td>
-                    </tr>
-                    <tr>
-                        <td>Bubble Sort</td>
-                        <td>O(n)</td>
-                        <td>O(n²)</td>
-                        <td>O(n²)</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
     </div>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Global variables
         let currentArray = [];
         let topdownSteps = [];
         let bottomupSteps = [];
         let currentTopdownStep = 0;
         let currentBottomupStep = 0;
+        let animationSpeed = 1000; // ms
         let animationInterval = null;
 
-        // File upload handling
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const content = e.target.result;
-                    currentArray = content.trim().split(/\s+/).map(num => parseInt(num)).filter(num => !isNaN(num));
-                    document.getElementById('manualInput').value = currentArray.join(' ');
-                    updateArrayDisplay();
-                };
-                reader.readAsText(file);
-            }
-        });
-
+        // Core functions
         function generateRandomArray() {
-            const size = parseInt(document.getElementById('randomSize').value);
+            const size = parseInt(document.getElementById('randomSize').value) || 10;
             currentArray = Array.from({length: size}, () => Math.floor(Math.random() * 100) + 1);
             document.getElementById('manualInput').value = currentArray.join(' ');
             updateArrayDisplay();
@@ -456,10 +339,9 @@
 
         function addSingleElement() {
             const input = document.getElementById('singleInput');
-            const num = parseInt(input.value);
-            if (!isNaN(num)) {
-                currentArray.push(num);
-                document.getElementById('manualInput').value = currentArray.join(' ');
+            const value = parseInt(input.value);
+            if (!isNaN(value)) {
+                currentArray.push(value);
                 input.value = '';
                 updateArrayDisplay();
             }
@@ -468,129 +350,259 @@
         function clearArray() {
             currentArray = [];
             document.getElementById('manualInput').value = '';
+            updateArrayDisplay();
             document.getElementById('visualizationSection').style.display = 'none';
         }
 
         function updateArrayDisplay() {
-            document.getElementById('originalArray').textContent = currentArray.join(', ');
+            const arrayDisplay = document.getElementById('arrayDisplay');
+            if (arrayDisplay) {
+                arrayDisplay.textContent = currentArray.join(', ');
+            }
         }
 
-        function startHeapSort() {
+        // Heap Sort implementation
+        async function startHeapSort() {
+            console.log('startHeapSort called');
             if (currentArray.length === 0) {
                 alert('Please enter some numbers first.');
                 return;
             }
 
-            // Send array to backend for heap sort visualization
-            fetch('/heap_sort/sort', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ array: currentArray })
-            })
-            .then(response => response.json())
-                         .then(data => {
-                 topdownSteps = data.topdown_steps;
-                 bottomupSteps = data.bottomup_steps;
-                 
-                 // Update total steps count and slider max values
-                 document.getElementById('topdownTotalSteps').textContent = topdownSteps.length;
-                 document.getElementById('bottomupTotalSteps').textContent = bottomupSteps.length;
-                 document.getElementById('topdownSlider').max = Math.max(0, topdownSteps.length - 1);
-                 document.getElementById('bottomupSlider').max = Math.max(0, bottomupSteps.length - 1);
-                 
-                 // Show visualization section
-                 document.getElementById('visualizationSection').style.display = 'block';
-                 
-                 // Update displays
-                 updateTopdownDisplay();
-                 updateBottomupDisplay();
-                 
-                 // Show success message
-                 if (data.message) {
-                     alert(data.message);
-                 }
-             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error performing heap sort. Please try again.');
-            });
+            try {
+                // Show loading state
+                const startButton = document.querySelector('button[onclick="startHeapSort()"]');
+                const originalButtonText = startButton.innerHTML;
+                startButton.disabled = true;
+                startButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                // Ensure currentArray is an array of numbers
+                const sanitizedArray = currentArray.map(Number).filter(n => !isNaN(n));
+                console.log('Sending request to server with array:', sanitizedArray);
+                
+                const startTime = performance.now();
+                const response = await fetch('/heap_sort/sort', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ array: sanitizedArray })
+                });
+                const requestTime = performance.now() - startTime;
+                console.log(`Request completed in ${requestTime.toFixed(2)}ms`);
+
+                console.log('Received response status:', response.status);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error response:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data received, keys:', Object.keys(data));
+                
+                if (data.error) {
+                    console.error('Server returned error:', data.error);
+                    throw new Error(data.error);
+                }
+
+                if (!data.topdown_steps || !data.bottomup_steps) {
+                    console.error('Missing required data in response. Available keys:', Object.keys(data));
+                    throw new Error('Invalid response format from server');
+                }
+
+                console.log('Topdown steps count:', data.topdown_steps.length);
+                console.log('Bottomup steps count:', data.bottomup_steps.length);
+                
+                if (data.topdown_steps.length > 0) {
+                    console.log('First topdown step:', {
+                        array: data.topdown_steps[0].array,
+                        has_visualization: !!data.topdown_steps[0].visualization,
+                        visualization_length: data.topdown_steps[0].visualization ? data.topdown_steps[0].visualization.length : 0
+                    });
+                }
+
+                topdownSteps = data.topdown_steps || [];
+                bottomupSteps = data.bottomup_steps || [];
+
+                currentTopdownStep = 0;
+                currentBottomupStep = 0;
+
+                // Show visualization section and switch to first tab
+                const vizSection = document.getElementById('visualizationSection');
+                console.log('Visualization section display style before:', vizSection.style.display);
+                vizSection.style.display = 'block';
+                console.log('Visualization section display style after:', vizSection.style.display);
+                
+                switchTab('topdown');
+
+                // Update displays
+                console.log('Updating displays...');
+                try {
+                    await updateTopdownDisplay();
+                    console.log('Topdown display updated');
+                    await updateBottomupDisplay();
+                    console.log('Bottomup display updated');
+                } catch (displayError) {
+                    console.error('Error updating displays:', displayError);
+                    throw displayError;
+                }
+
+                console.log('Scrolling to visualization...');
+                vizSection.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('Error in startHeapSort:', error);
+                alert('An error occurred: ' + (error.message || 'Unknown error'));
+            } finally {
+                // Restore button state
+                const startButton = document.querySelector('button[onclick="startHeapSort()"]');
+                if (startButton) {
+                    startButton.disabled = false;
+                    startButton.innerHTML = 'Start Heap Sort';
+                }
+            }
         }
-
-        // Client-side heap sort functions removed - now using server-side visualization
-
-        // Client-side heap sort functions removed - now using server-side visualization
-
-        // Client-side heap sort functions removed - now using server-side visualization
-
-        function updateTopdownDisplay() {
-            if (topdownSteps.length === 0) return;
-            
-            const step = topdownSteps[currentTopdownStep];
-            const arrayDisplay = document.getElementById('topdownArray');
-            const treeDisplay = document.getElementById('topdownTree');
-            
-            // Update array display with highlighting
-            arrayDisplay.innerHTML = step.array.map((num, index) => {
-                let className = 'array-element';
-                if (step.sorted_indices.includes(index)) {
-                    className += ' sorted';
-                }
-                if (index === step.current_index) {
-                    className += ' current';
-                }
-                return `<div class="${className}">${num}</div>`;
-            }).join('');
-            
-            // Display the heap visualization
-            treeDisplay.innerHTML = step.visualization;
-            
-            document.getElementById('topdownStep').textContent = currentTopdownStep + 1;
-            document.getElementById('topdownSlider').value = currentTopdownStep;
+// Update the updateTopdownDisplay function
+async function updateTopdownDisplay() {
+    console.log('updateTopdownDisplay called, step:', currentTopdownStep);
+    const arrayDiv = document.getElementById('topdownArray');
+    const heapDiv = document.getElementById('topdownHeap');
+    
+    if (!arrayDiv || !heapDiv) {
+        console.error('Could not find required DOM elements');
+        return;
+    }
+    
+    if (currentTopdownStep >= 0 && currentTopdownStep < topdownSteps.length) {
+        const step = topdownSteps[currentTopdownStep];
+        console.log('Current step data:', {
+            array: step.array,
+            has_visualization: !!step.visualization,
+            sorted_indices: step.sorted_indices,
+            current_index: step.current_index
+        });
+        
+        // Update array display
+        arrayDiv.innerHTML = '';
+        step.array.forEach((num, index) => {
+            const element = document.createElement('div');
+            element.className = 'array-element';
+            element.textContent = num;
+            if (step.sorted_indices && step.sorted_indices.includes(index)) {
+                element.classList.add('sorted');
+            } else if (index === step.current_index) {
+                element.classList.add('current');
+            }
+            arrayDiv.appendChild(element);
+        });
+        
+        // Update heap visualization - now it's HTML instead of SVG
+        heapDiv.innerHTML = '';
+        if (step.visualization) {
+            try {
+                console.log('Rendering HTML visualization...');
+                // Simply insert the HTML content directly
+                heapDiv.innerHTML = step.visualization;
+                console.log('HTML visualization added to DOM');
+            } catch (htmlError) {
+                console.error('Error rendering HTML:', htmlError);
+                heapDiv.innerHTML = '<div style="color: red; padding: 10px;">Error rendering visualization</div>';
+            }
+        } else {
+            console.warn('No visualization data available for this step');
+            heapDiv.innerHTML = '<div style="color: #666; padding: 10px;">No visualization available</div>';
         }
-
-        function updateBottomupDisplay() {
-            if (bottomupSteps.length === 0) return;
-            
-            const step = bottomupSteps[currentBottomupStep];
-            const arrayDisplay = document.getElementById('bottomupArray');
-            const treeDisplay = document.getElementById('bottomupTree');
-            
-            // Update array display with highlighting
-            arrayDisplay.innerHTML = step.array.map((num, index) => {
-                let className = 'array-element';
-                if (step.sorted_indices.includes(index)) {
-                    className += ' sorted';
-                }
-                if (index === step.current_index || index === step.swap_with) {
-                    className += ' current';
-                }
-                return `<div class="${className}">${num}</div>`;
-            }).join('');
-            
-            // Display the heap visualization
-            treeDisplay.innerHTML = step.visualization;
-            
-            document.getElementById('bottomupStep').textContent = currentBottomupStep + 1;
-            document.getElementById('bottomupSlider').value = currentBottomupStep;
+        
+        // Update step counter
+        const stepCounter = document.getElementById('topdownStep');
+        if (stepCounter) {
+            stepCounter.textContent = `Step: ${currentTopdownStep + 1}/${topdownSteps.length}`;
         }
+    } else {
+        console.warn('Invalid step index:', currentTopdownStep, 'Total steps:', topdownSteps.length);
+    }
+}
 
-        // Client-side heap tree visualization removed - now using server-side Graphviz visualization
+// Update the updateBottomupDisplay function
+async function updateBottomupDisplay() {
+    console.log('updateBottomupDisplay called, step:', currentBottomupStep);
+    const arrayDiv = document.getElementById('bottomupArray');
+    const heapDiv = document.getElementById('bottomupHeap');
+    
+    if (!arrayDiv || !heapDiv) {
+        console.error('Could not find required DOM elements for bottom-up display');
+        return;
+    }
+    
+    if (currentBottomupStep >= 0 && currentBottomupStep < bottomupSteps.length) {
+        const step = bottomupSteps[currentBottomupStep];
+        console.log('Current bottom-up step data:', {
+            array: step.array,
+            has_visualization: !!step.visualization,
+            sorted_indices: step.sorted_indices,
+            current_index: step.current_index,
+            swap_with: step.swap_with
+        });
+        
+        // Update array display
+        arrayDiv.innerHTML = '';
+        step.array.forEach((num, index) => {
+            const element = document.createElement('div');
+            element.className = 'array-element';
+            element.textContent = num;
+            if (step.sorted_indices && step.sorted_indices.includes(index)) {
+                element.classList.add('sorted');
+            } else if (index === step.current_index) {
+                element.classList.add('current');
+            } else if (index === step.swap_with) {
+                element.classList.add('current');
+            }
+            arrayDiv.appendChild(element);
+        });
+        
+        // Update heap visualization - now it's HTML instead of SVG
+        heapDiv.innerHTML = '';
+        if (step.visualization) {
+            try {
+                console.log('Rendering bottom-up HTML visualization...');
+                // Simply insert the HTML content directly
+                heapDiv.innerHTML = step.visualization;
+                console.log('Bottom-up HTML visualization added to DOM');
+            } catch (htmlError) {
+                console.error('Error rendering bottom-up HTML:', htmlError);
+                heapDiv.innerHTML = '<div style="color: red; padding: 10px;">Error rendering bottom-up visualization</div>';
+            }
+        } else {
+            console.warn('No visualization data available for this bottom-up step');
+            heapDiv.innerHTML = '<div style="color: #666; padding: 10px;">No visualization available</div>';
+        }
+        
+        // Update step counter
+        const stepCounter = document.getElementById('bottomupStep');
+        if (stepCounter) {
+            stepCounter.textContent = `Step: ${currentBottomupStep + 1}/${bottomupSteps.length}`;
+        }
+    } else {
+        console.warn('Invalid bottom-up step index:', currentBottomupStep, 'Total steps:', bottomupSteps.length);
+    }
+}
 
+        // UI Control functions
         function switchTab(algorithm) {
             // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
             
-            // Show selected tab
-            if (algorithm === 'topdown') {
-                document.getElementById('topdown-tab').classList.add('active');
-                document.querySelectorAll('.tab-button')[0].classList.add('active');
-            } else {
-                document.getElementById('bottomup-tab').classList.add('active');
-                document.querySelectorAll('.tab-button')[1].classList.add('active');
-            }
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content and activate button
+            document.getElementById(algorithm + 'Content').classList.add('active');
+            document.querySelector(`.tab-button[onclick*="${algorithm}"]`).classList.add('active');
         }
 
         function previousStep(algorithm) {
@@ -613,88 +625,99 @@
             }
         }
 
-        function playAnimation(algorithm) {
+        function resetAnimation(algorithm) {
             if (animationInterval) {
                 clearInterval(animationInterval);
                 animationInterval = null;
-                return;
             }
             
-            const steps = algorithm === 'topdown' ? topdownSteps : bottomupSteps;
-            let currentStep = algorithm === 'topdown' ? currentTopdownStep : currentBottomupStep;
-            
-            animationInterval = setInterval(() => {
-                if (currentStep < steps.length - 1) {
-                    currentStep++;
-                    if (algorithm === 'topdown') {
-                        currentTopdownStep = currentStep;
-                        updateTopdownDisplay();
-                    } else {
-                        currentBottomupStep = currentStep;
-                        updateBottomupDisplay();
-                    }
-                } else {
-                    clearInterval(animationInterval);
-                    animationInterval = null;
-                }
-            }, 1000);
+            if (algorithm === 'topdown') {
+                currentTopdownStep = 0;
+                updateTopdownDisplay();
+                document.getElementById('playPauseTopdown').innerHTML = '<i class="fas fa-play"></i> Play';
+            } else {
+                currentBottomupStep = 0;
+                updateBottomupDisplay();
+                document.getElementById('playPauseBottomup').innerHTML = '<i class="fas fa-play"></i> Play';
+            }
         }
 
-        // Initialize
-        updateArrayDisplay();
-        
+        function playAnimation(algorithm) {
+            const playButton = document.getElementById(`playPause${algorithm.charAt(0).toUpperCase() + algorithm.slice(1)}`);
+            
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+                playButton.innerHTML = '<i class="fas fa-play"></i> Play';
+                return;
+            }
+
+            const steps = algorithm === 'topdown' ? topdownSteps : bottomupSteps;
+            let currentStep = algorithm === 'topdown' ? currentTopdownStep : currentBottomupStep;
+            const maxStep = steps.length - 1;
+            const updateFn = algorithm === 'topdown' ? updateTopdownDisplay : updateBottomupDisplay;
+            const stepVar = algorithm === 'topdown' ? 'currentTopdownStep' : 'currentBottomupStep';
+            
+            if (currentStep >= maxStep) {
+                // Reset to start if at the end
+                window[stepVar] = 0;
+                currentStep = 0;
+            }
+            
+            updateFn();
+            
+            animationInterval = setInterval(() => {
+                if (currentStep >= maxStep) {
+                    clearInterval(animationInterval);
+                    animationInterval = null;
+                    return;
+                }
+                
+                currentStep++;
+                window[stepVar] = currentStep;
+                updateFn();
+                
+                // Update play/pause button when animation completes
+                if (currentStep >= maxStep) {
+                    const playButton = document.getElementById(`playPause${algorithm.charAt(0).toUpperCase() + algorithm.slice(1)}`);
+                    if (playButton) {
+                        playButton.innerHTML = '<i class="fas fa-play"></i> Play';
+                    }
+                }
+            }, animationSpeed);
+        }
+
         // Initialize time complexity chart
         function initComplexityChart() {
             const ctx = document.getElementById('complexityChart').getContext('2d');
-            const sizes = [10, 50, 100, 200, 500, 1000, 2000];
-            
-            // Theoretical time complexity functions
-            const nLogn = sizes.map(n => n * Math.log2(n) * 0.1); // scaled for better visualization
-            const nSquared = sizes.map(n => n * n * 0.001); // scaled for better visualization
-            const linear = sizes.map(n => n * 2); // scaled for better visualization
-            
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: sizes,
+                    labels: ['5', '10', '50', '100', '500', '1000'],
                     datasets: [
                         {
-                            label: 'Heap Sort (n log n)',
-                            data: nLogn,
+                            label: 'Best Case (O(n log n))',
+                            data: [8.5, 23, 195, 460, 4485, 10000],
                             borderColor: 'rgba(75, 192, 192, 1)',
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderWidth: 2,
-                            tension: 0.3,
                             fill: true
                         },
                         {
-                            label: 'Quick Sort (n log n avg, n² worst)',
-                            data: nLogn.map((val, i) => i === nLogn.length - 1 ? sizes[i] * sizes[i] * 0.001 : val * 1.2),
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            tension: 0.3,
-                            fill: false
-                        },
-                        {
-                            label: 'Bubble Sort (n²)',
-                            data: nSquared,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: false
-                        },
-                        {
-                            label: 'Linear (n)',
-                            data: linear,
+                            label: 'Average Case (O(n log n))',
+                            data: [12, 33, 282, 664, 7044, 15000],
                             borderColor: 'rgba(54, 162, 235, 1)',
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             borderWidth: 2,
-                            borderDash: [2, 2],
-                            tension: 0.3,
-                            fill: false
+                            fill: true
+                        },
+                        {
+                            label: 'Worst Case (O(n log n))',
+                            data: [15, 40, 345, 800, 9000, 19000],
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 2,
+                            fill: true
                         }
                     ]
                 },
@@ -703,47 +726,55 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Time Complexity Comparison',
-                            font: {
-                                size: 16
-                            }
+                            text: 'Heap Sort Time Complexity',
+                            font: { size: 16 }
                         },
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20
-                            }
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                        }
+                        tooltip: { mode: 'index', intersect: false }
                     },
                     scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Number of Elements (n)'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Relative Time'
-                            },
-                            min: 0
+                        x: { title: { display: true, text: 'Number of Elements (n)' } },
+                        y: { 
+                            title: { display: true, text: 'Operations' },
+                            beginAtZero: true
                         }
                     },
-                    animation: {
-                        duration: 2000
-                    }
+                    animation: { duration: 2000 }
                 }
             });
         }
-        
-        // Initialize the chart when the page loads
-        document.addEventListener('DOMContentLoaded', initComplexityChart);
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // File input handler
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    currentArray = content.trim().split(/\s+/).map(Number).filter(n => !isNaN(n));
+                    document.getElementById('manualInput').value = currentArray.join(' ');
+                    updateArrayDisplay();
+                };
+                reader.readAsText(file);
+            });
+
+            // Manual input handler
+            document.getElementById('manualInput').addEventListener('change', function() {
+                const input = this.value.trim();
+                if (input) {
+                    currentArray = input.split(/\s+/).map(Number).filter(n => !isNaN(n));
+                    updateArrayDisplay();
+                }
+            });
+
+            // Initialize the chart and display
+            if (typeof initComplexityChart === 'function') {
+                initComplexityChart();
+            }
+            updateArrayDisplay();
+        });
     </script>
 </body>
 </html>

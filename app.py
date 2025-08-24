@@ -224,91 +224,204 @@ def generate_random_graph(n_nodes, edge_prob):
                 G.add_edge(i, j)
     return G
 
+
 def visualize_heap(arr, sorted_indices, current_index, current_color, swap_with=None):
-    dot = Digraph()
-    dot.attr(rankdir='TB')  # Top to bottom layout
-    dot.attr('node', shape='circle', style='filled', fontsize='14', fontweight='bold')
-    dot.attr('edge', color='#34495e', penwidth='3')  # Dark blue edges with thickness
+    """Generate clean tree visualization using CSS positioning"""
+    
+    if not arr:
+        return "<div>Empty heap</div>"
     
     n = len(arr)
+    if n == 0:
+        return "<div>Empty heap</div>"
     
-    # Add all nodes first
-    for i in range(n):
-        # Determine node color and style
-        if i == current_index:
-            node_color = current_color
-            node_style = 'filled,bold'
-        elif i == swap_with:
-            node_color = current_color
-            node_style = 'filled,bold'
-        elif i in sorted_indices:
-            node_color = "#27ae60"  # Green for sorted
-            node_style = 'filled'
+    # Calculate tree height
+    import math
+    height = math.ceil(math.log2(n + 1))
+    
+    # Base dimensions
+    node_size = 40
+    level_height = 60
+    base_width = (2 ** (height - 1)) * node_size * 2
+    
+    html = f"""
+    <div style="position: relative; width: {base_width}px; height: {height * level_height + 50}px; margin: 20px auto; background: #f8f9fa; border-radius: 10px; padding: 20px;">
+    """
+    
+    def get_node_style(index):
+        """Get styling for node based on its state"""
+        if index == current_index:
+            return "background-color: #e74c3c; color: white; border: 3px solid #c0392b;"
+        elif index == swap_with:
+            return "background-color: #f39c12; color: white; border: 3px solid #e67e22;"
+        elif index in sorted_indices:
+            return "background-color: #27ae60; color: white; border: 3px solid #229954;"
         else:
-            node_color = "#3498db"  # Blue for unsorted
-            node_style = 'filled'
-        
-        label = str(arr[i])
-        dot.node(str(i), label, 
-                color=node_color, 
-                fillcolor=node_color, 
-                fontcolor='white',
-                style=node_style,
-                width='0.8',
-                height='0.8')
+            return "background-color: #3498db; color: white; border: 3px solid #2980b9;"
     
-    # Add all parent-child edges to show the complete heap structure
+    def calculate_position(index):
+        """Calculate x, y position for a node"""
+        if index >= n:
+            return None, None
+            
+        # Find which level this node is on
+        level = math.floor(math.log2(index + 1))
+        
+        # Position within the level
+        position_in_level = index - (2 ** level - 1)
+        
+        # Calculate positions
+        y = level * level_height + 10
+        
+        # X position: center the level, then space nodes evenly
+        level_width = base_width
+        nodes_in_level = 2 ** level
+        spacing = level_width / (nodes_in_level + 1)
+        x = spacing * (position_in_level + 1) - node_size // 2
+        
+        return x, y
+    
+    # Draw connecting lines first (so they appear behind nodes)
     for i in range(n):
-        # Left child: 2*i + 1
         left_child = 2 * i + 1
-        if left_child < n:
-            dot.edge(str(i), str(left_child))
-        
-        # Right child: 2*i + 2
         right_child = 2 * i + 2
+        
+        parent_x, parent_y = calculate_position(i)
+        if parent_x is None:
+            continue
+            
+        parent_center_x = parent_x + node_size // 2
+        parent_center_y = parent_y + node_size // 2
+        
+        # Draw line to left child
+        if left_child < n:
+            child_x, child_y = calculate_position(left_child)
+            if child_x is not None:
+                child_center_x = child_x + node_size // 2
+                child_center_y = child_y + node_size // 2
+                
+                # SVG line for clean connection
+                html += f"""
+                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                    <line x1="{parent_center_x}" y1="{parent_center_y}" 
+                          x2="{child_center_x}" y2="{child_center_y}" 
+                          stroke="#2c3e50" stroke-width="2"/>
+                </svg>
+                """
+        
+        # Draw line to right child
         if right_child < n:
-            dot.edge(str(i), str(right_child))
+            child_x, child_y = calculate_position(right_child)
+            if child_x is not None:
+                child_center_x = child_x + node_size // 2
+                child_center_y = child_y + node_size // 2
+                
+                # SVG line for clean connection
+                html += f"""
+                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                    <line x1="{parent_center_x}" y1="{parent_center_y}" 
+                          x2="{child_center_x}" y2="{child_center_y}" 
+                          stroke="#2c3e50" stroke-width="2"/>
+                </svg>
+                """
     
-    return dot
-
-# Routes
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/avl_tree')
-def avl_tree():
-    return render_template('avl_tree.html')
-
-@app.route('/avl_tree/insert', methods=['POST'])
-def avl_insert():
-    data = request.get_json()
-    numbers = data.get('numbers', [])
+    # Draw all nodes
+    for i in range(n):
+        x, y = calculate_position(i)
+        if x is None:
+            continue
+            
+        value = str(arr[i])
+        if len(value) > 4:
+            value = value[:4]
+        
+        node_style = get_node_style(i)
+        
+        html += f"""
+        <div style="
+            position: absolute;
+            left: {x}px;
+            top: {y}px;
+            width: {node_size}px;
+            height: {node_size}px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            {node_style}
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 10;
+        ">{value}</div>
+        """
     
-    root = None
-    steps = []
-    
-    for key in numbers:
-        root = insert(root, key)
-        current_graph = visualize_tree(root, Digraph())
-        svg_content = current_graph.pipe(format='svg').decode('utf-8')
-        steps.append(svg_content)
-    
-    ino = []
-    pre = []
-    inOrder(root, ino)
-    preOrder(root, pre)
-    
-    return jsonify({
-        'steps': steps,
-        'inorder': ino,
-        'preorder': pre
-    })
+    html += "</div>"
+    return html
 
-@app.route('/heap_sort')
-def heap_sort():
-    return render_template('heap_sort.html')
 
+def visualize_heap_simple(arr, sorted_indices, current_index, current_color, swap_with=None):
+    """Ultra-compact heap visualization as formatted array with tree structure indicators"""
+    
+    if not arr:
+        return "<div>Empty heap</div>"
+    
+    html = "<div style='font-family: monospace; font-size: 14px; padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 10px 0;'>"
+    
+    # Array representation with level indicators
+    html += "<div style='margin-bottom: 10px; font-weight: bold; color: #2c3e50;'>Heap Array:</div>"
+    
+    level = 0
+    level_start = 0
+    level_size = 1
+    
+    while level_start < len(arr):
+        level_end = min(level_start + level_size, len(arr))
+        
+        # Level header
+        html += f"<div style='margin: 5px 0; color: #666;'>Level {level}: "
+        
+        # Elements in this level
+        for i in range(level_start, level_end):
+            value = arr[i]
+            
+            # Styling based on state
+            if i == current_index:
+                style = "background: #e74c3c; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;"
+            elif i == swap_with:
+                style = "background: #f39c12; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;"
+            elif i in sorted_indices:
+                style = "background: #27ae60; color: white; padding: 2px 6px; border-radius: 3px;"
+            else:
+                style = "background: #3498db; color: white; padding: 2px 6px; border-radius: 3px;"
+            
+            html += f"<span style='{style}'>{value}</span> "
+        
+        html += "</div>"
+        
+        level_start = level_end
+        level_size *= 2
+        level += 1
+    
+    # Add simple parent-child relationships
+    html += "<div style='margin-top: 15px; font-size: 12px; color: #666;'>"
+    html += "<div style='font-weight: bold; margin-bottom: 5px;'>Parent-Child Relations:</div>"
+    
+    for i in range(len(arr)):
+        left_child = 2 * i + 1
+        right_child = 2 * i + 2
+        
+        if left_child < len(arr) or right_child < len(arr):
+            html += f"<div>{arr[i]} → "
+            if left_child < len(arr):
+                html += f"L:{arr[left_child]} "
+            if right_child < len(arr):
+                html += f"R:{arr[right_child]}"
+            html += "</div>"
+    
+    html += "</div></div>"
+    
+    return html
 @app.route('/heap_sort/sort', methods=['POST'])
 def heap_sort_api():
     data = request.get_json()
@@ -321,35 +434,35 @@ def heap_sort_api():
     topdown_visualizations = []
     for step in topdown_steps:
         step_arr, sorted_until, current_index, current_color = step
-        dot = visualize_heap(step_arr, sorted_until, current_index, current_color)
-        svg_content = dot.pipe(format='svg').decode('utf-8')
+        # Get HTML visualization directly (no need for .pipe())
+        html_content = visualize_heap(step_arr, sorted_until, current_index, current_color)
         topdown_visualizations.append({
             'array': step_arr,
             'sorted_indices': list(sorted_until) if isinstance(sorted_until, set) else sorted_until,
             'current_index': current_index,
             'current_color': current_color,
-            'visualization': svg_content
+            'visualization': html_content
         })
     
     bottomup_visualizations = []
     for step in bottomup_steps:
         step_arr, sorted_until, current_index, current_color, swap_with = step
-        dot = visualize_heap(step_arr, sorted_until, current_index, current_color, swap_with)
-        svg_content = dot.pipe(format='svg').decode('utf-8')
+        # Get HTML visualization directly (no need for .pipe())
+        html_content = visualize_heap(step_arr, sorted_until, current_index, current_color, swap_with)
         bottomup_visualizations.append({
             'array': step_arr,
             'sorted_indices': list(sorted_until) if isinstance(sorted_until, set) else sorted_until,
             'current_index': current_index,
             'current_color': current_color,
             'swap_with': swap_with,
-            'visualization': svg_content
+            'visualization': html_content
         })
     
     return jsonify({
         'topdown_steps': topdown_visualizations,
         'bottomup_steps': bottomup_visualizations,
         'sorted_array': sorted(arr),
-        'message': 'Heap sort completed with clear parent-child line visualization!'
+        'message': 'Heap sort completed with compact tree visualization!'
     })
 
 @app.route('/heap_sort/visualize_step', methods=['POST'])
@@ -362,17 +475,20 @@ def visualize_heap_step():
     current_color = data.get('current_color', '')
     swap_with = data.get('swap_with', None)
     
-    dot = visualize_heap(arr, sorted_indices, current_index, current_color, swap_with)
-    svg_content = dot.pipe(format='svg').decode('utf-8')
+    # Get HTML visualization directly (no need for .pipe())
+    html_content = visualize_heap(arr, sorted_indices, current_index, current_color, swap_with)
     
     return jsonify({
-        'visualization': svg_content,
+        'visualization': html_content,
         'array': arr,
         'sorted_indices': list(sorted_indices),
         'current_index': current_index,
         'current_color': current_color,
         'swap_with': swap_with
     })
+@app.route('/heap_sort')
+def heap_sort():
+    return render_template('heap_sort.html')
 
 @app.route('/graph_coloring')
 def graph_coloring():
